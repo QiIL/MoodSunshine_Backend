@@ -1,0 +1,6 @@
+./test/bootstrap.test.js
+./test/unit/**/*.test.js
+--reporter list
+--recursive
+--timeout 5000
+--harmony
