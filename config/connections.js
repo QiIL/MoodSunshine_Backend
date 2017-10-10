@@ -56,15 +56,18 @@ module.exports.connections = {
   * Run: npm install sails-mongo                                             *
   *                                                                          *
   ***************************************************************************/
-  // someMongodbServer: {
-  //   adapter: 'sails-mongo',
-  //   host: 'localhost',
-  //   port: 27017,
-  //   user: 'username', //optional
-  //   password: 'password', //optional
-  //   database: 'your_mongo_db_name_here' //optional
-  // },
+  localMongodbServer: {
+    adapter: 'sails-mongo',
+		url: process.env.MOOD_MONGO_URL || "mongodb://127.0.0.1:27017/mood_shine"
+  },
 
+	/**
+   * Memory configuration for DEVELOPMENT ONLY
+   * @type {Object}
+   */ 
+  memory: {
+    adapter: 'sails-memory'
+  },
   /***************************************************************************
   *                                                                          *
   * PostgreSQL is another officially supported relational database.          *
@@ -73,14 +76,12 @@ module.exports.connections = {
   * Run: npm install sails-postgresql                                        *
   *                                                                          *
   *                                                                          *
-  ***************************************************************************/
-  // somePostgresqlServer: {
-  //   adapter: 'sails-postgresql',
-  //   host: 'YOUR_POSTGRES_SERVER_HOSTNAME_OR_IP_ADDRESS',
-  //   user: 'YOUR_POSTGRES_USER', // optional
-  //   password: 'YOUR_POSTGRES_PASSWORD', // optional
-  //   database: 'YOUR_POSTGRES_DB' //optional
-  // }
+	***************************************************************************/
+	
+  localPostgresqlServer: {
+    adapter: 'sails-postgresql',
+    url: process.env.MOOD_PGSQL_URL || "postgresql://root@127.0.0.1:5432/mood_shine"
+  },
 
 
   /***************************************************************************

@@ -24,7 +24,7 @@ before(function (done) {
     // Save original objects in `fixtures` variable
     fixtures = barrels.data;
 
-    // Populate the DB
+    // Populate the DB 
     barrels.populate(function (err) {
       done(err, sails);
     });
