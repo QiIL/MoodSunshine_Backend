@@ -28,7 +28,7 @@ module.exports = {
   },
 
   models: {
-    connection: 'localMongodbServer',
+    connection: ['localPostgresqlServer', 'localMongodbServer'],
     migrate: 'drop'
   },
 

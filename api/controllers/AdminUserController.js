@@ -21,7 +21,6 @@ module.exports = {
 			password: Joi.string().required()
 		})
 		schema.validate(req.body, function (err, regData) {
-			// regData.mood_userid = 
 			if (err) { return res.badRequest(err.details[0].message); }
 			
 			var encrypt_password = CryptoService.encrypt(regData, sails.config.auth.security.encryptKey);

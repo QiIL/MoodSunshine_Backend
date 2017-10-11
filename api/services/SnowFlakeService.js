@@ -126,5 +126,12 @@ module.exports = {
 			// 转换成16进制然后返回
 			return StringBinaryService.BinaryChange(binaryId);
 		}
+	},
+
+	UserIdWorker: function () {
+		/** 开始id */
+		this.lastId = 0;
+
+		
 	}
 }
