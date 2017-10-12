@@ -48,12 +48,8 @@ module.exports.policies = {
 		// before letting any users feed our rabbits
 		// feed : ['isNiceToAnimals', 'hasRabbitFood']
 	// }
-	AdminUserController: {
-		create: true,
-		findOne: true,
-		find: true,
+	MoodUserbaseController: {
 		login: true,
-		logout: true,
-		update: true,
+		find: true,
 	}
 };

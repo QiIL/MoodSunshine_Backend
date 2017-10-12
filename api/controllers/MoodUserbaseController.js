@@ -4,7 +4,7 @@
 
  'use strict';
 
-var Joi = require('joi');
+let Joi = require('joi');
 
 module.exports = {
 
@@ -15,17 +15,17 @@ module.exports = {
 	 * @return {*}
 	 */
 	create: function (req, res) {
-		var schema = Joi.object({
-			name: Joi.string(),
-			username: Joi.string().required(),
-			password: Joi.string().required()
+		let schema = Joi.object({
+			mood_name: Joi.string(),
+			mood_username: Joi.string().required(),
+			mood_password: Joi.string().required()
 		})
 		schema.validate(req.body, function (err, regData) {
 			if (err) { return res.badRequest(err.details[0].message); }
 			
-			var encrypt_password = CryptoService.encrypt(regData, sails.config.auth.security.encryptKey);
+			let encrypt_password = CryptoService.encrypt(regData, sails.config.auth.security.encryptKey);
 			_.omit(regData, ['password']);
-			regData = _.extend({ password: encrypt_password }, regData)
+			regData = _.extend({ mood_password: encrypt_password }, regData)
 			AdminUser.create(regData).exec(function (err) {
 				if (err) { return res.serverError(err) }
 
@@ -41,25 +41,18 @@ module.exports = {
    * @returns {*}
    */
   login: function (req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
+    let username = req.body.username;
+    let password = req.body.password;
     if (!username || !password) {
       return res.json({code: -1, message: "username and password is require!"});
     }
-    var encrypt_password = CryptoService.encrypt(password, sails.config.auth.security.encryptKey);
-    AdminUser.findOne({'username': username, 'password': encrypt_password}).exec(function (err, user) {
+    let encrypt_password = CryptoService.encrypt(password, sails.config.auth.security.encryptKey);
+    AdminUser.findOne({mood_username: username, mood_password: encrypt_password}).exec(function (err, user) {
       if (!err && user) {
-        AdminUser.findOne({'id': user.superior_id}).exec(function (err, result_superior) {
-					if (!err && result_superior) {
-						delete result_superior.password;
-						user.superior = result_superior;
-					}
-					req.session.adminlogined = true;
-					req.session.adminUserInfo = user;
-					delete user.password;
-					res.ok({message: "login success!", data: user});
-				}
-        );
+				_.omit(user, ['password']);
+				req.session.adminlogined = true;
+				req.session.adminUserInfo = user;
+				res.ok({message: "login success!", data: user});
       } else {
         res.forbidden({message: "用户名或密码错误"});
       }
@@ -76,7 +69,8 @@ module.exports = {
     req.session.adminlogined = false;
     req.session.adminUserInfo = '';
     res.ok({message: "logout success!"});
-  },
+	},
+	
 	/**
    * Overrides for the settings in `config/controllers.js`
    * (specific to ReportsController)

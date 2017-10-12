@@ -7,7 +7,7 @@
 
 module.exports = {
 	schema: true,
-	tableName: 'user',
+	tableName: 'mood_userbase',
 	meta: {
 		shcemaName: 'public'
 	},
@@ -28,15 +28,19 @@ module.exports = {
 		},
 		// 用户名字
 		mood_name: {
-			type: "String"
+			type: "String",
+			required: true,
+			defaultsTo: ""
 		},
 
 		createdAt: {
 			type: "datetime",
+			required: true,
       defaultsTo: new Date()
     },
     updatedAt: {
 			type: "datetime",
+			required: true,
       defaultsTo: new Date()
     }
 	},

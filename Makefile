@@ -7,6 +7,6 @@ install:
 	@npm install $(NPM_REGISTRY)
 
 test:
-	NODE_ENV=$(TEST_NODE_ENV) MOOD_MONGO_URL=$(LOCAL_PGSQL_URL) node_modules/.bin/mocha
+	NODE_ENV=$(TEST_NODE_ENV) MOOD_PGSQL_URL=$(LOCAL_PGSQL_URL) MOOD_MONGO_URL=$(LOCAL_MONGO_URL) node_modules/.bin/mocha
 
 .PHONY: test
