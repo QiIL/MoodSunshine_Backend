@@ -4,7 +4,7 @@
 
  'use strict';
 
-let Joi = require('joi');
+const Joi = require('joi');
 
 module.exports = {
 
@@ -14,24 +14,22 @@ module.exports = {
 	 * @param res
 	 * @return {*}
 	 */
-	create: function (req, res) {
-		let schema = Joi.object({
-			mood_name: Joi.string(),
+	create: async (req, res) => {
+		const schema = Joi.object({
+			mood_nickname: Joi.string().required(),
 			mood_username: Joi.string().required(),
 			mood_password: Joi.string().required()
 		})
-		schema.validate(req.body, function (err, regData) {
-			if (err) { return res.badRequest(err.details[0].message); }
+		try {
+			let regData = await ParamValidateService.validate(schema, req.body)
+			let encrypt_password = await CryptoService.encrypt(regData.mood_password, sails.config.auth.security.encryptKey)
+			regData.mood_password = encrypt_password
+			await MoodUserbaseService.create(regData)
+			return res.created("User" + regData.username + "Created")
 			
-			let encrypt_password = CryptoService.encrypt(regData, sails.config.auth.security.encryptKey);
-			_.omit(regData, ['password']);
-			regData = _.extend({ mood_password: encrypt_password }, regData)
-			AdminUser.create(regData).exec(function (err) {
-				if (err) { return res.serverError(err) }
-
-				return res.created("User" + regData.username + "Created");
-			});
-		})
+		} catch (error) {
+			return res.badRequest(error.message)
+		}
 	},
 
 	/**
@@ -40,16 +38,16 @@ module.exports = {
    * @param res
    * @returns {*}
    */
-  login: function (req, res) {
+	login: async (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
     if (!username || !password) {
       return res.json({code: -1, message: "username and password is require!"});
     }
     let encrypt_password = CryptoService.encrypt(password, sails.config.auth.security.encryptKey);
-    AdminUser.findOne({mood_username: username, mood_password: encrypt_password}).exec(function (err, user) {
+    MoodUserbase.findOne({'mood_username': username, 'mood_password': encrypt_password}).exec(function (err, user) {
       if (!err && user) {
-				_.omit(user, ['password']);
+				_.omit(user, ['mood_password']);
 				req.session.adminlogined = true;
 				req.session.adminUserInfo = user;
 				res.ok({message: "login success!", data: user});
@@ -65,7 +63,7 @@ module.exports = {
    * @param res
 	 * @return {*}
    */
-  logout: function (req, res) {
+  logout: async (req, res) => {
     req.session.adminlogined = false;
     req.session.adminUserInfo = '';
     res.ok({message: "logout success!"});

@@ -1,7 +1,7 @@
 /**
  * Created by leo on 17-7-15.
  */
-var request = require('superagent');
+let request = require('superagent');
 
 
 module.exports = {
@@ -12,7 +12,7 @@ module.exports = {
    * @param callback
    */
   login: function (agent, user_info, callback) {
-    return agent.post(sails.getBaseurl() + "/api/v1/adminuser/login")
+    return agent.post(sails.getBaseurl() + "/api/v1/mooduserbase/login")
       .send(user_info)
       .end(function (err, res) {
         callback(err, res);

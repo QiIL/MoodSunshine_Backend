@@ -3,16 +3,16 @@
  */
 
 
-var should = require('should');
-var request = require('superagent');
-var CryptoService = require('../../../api/services/CryptoService');
-var encryptKey = require('../../../config/auth').auth.security.encryptKey
+const should = require('should');
+const request = require('superagent');
+const CryptoService = require('../../../api/services/CryptoService');
+const encryptKey = require('../../../config/auth').auth.security.encryptKey
 
-describe("Service: CtyptoService", function (req, res) {
-	it("should encrypt success", function (done) {
-		var buf = "Ohbep9"
-		buf = CryptoService.encrypt(buf, encryptKey)
+describe("Service: CtyptoService", (req, res) => {
+	it("should encrypt success", async () => {
+		let buf = "Ohbep9"
+		buf = await CryptoService.encrypt(buf, encryptKey)
+		console.log(buf)
 		buf.should.be.instanceof(String)
-		done()
 	})
 })

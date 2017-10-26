@@ -11,127 +11,127 @@
  * 
  * 本系统的snowflake的机器应该不会太多，所以减少了2位机器位，并把这些机器位分配到时间位和毫秒内计数位。
  */
+
+/**
+ * 私有方法: 阻塞到下一个毫秒，直到获得新的时间戳
+ * @param lastTimestamp 上次生成id的时间戳
+ * @return 当前时间戳
+ */
+function tilNextMillis (lastTimestamp) {
+	let timestamp = new Date().getTime();
+	while (timestamp <= lastTimestamp) {
+		timestamp = new Date().getTime();
+	}
+	return timestamp;
+}
+
+/** 私有变量 */
+/** 工作机器id（0-31） */
+let workerId;
+
+/** 数据中心id（0-31） */
+let datacenterId;
+
+/** 毫秒内序列（0-4095） */
+let sequence = 0;
+
+/** 上次生成id的时间戳 */
+let lastTimestamp = -1;
+
 module.exports = {
-	SnowflakeIdWorker: function (workerId=0, datacenterId=0) {
+	SnowflakeIdWorker: function (wId=0, datId=0) {
 		// ========================================= Fields ===================================================
 		/** 开始时间戳 （2017-10-10） */
-		this.twepoch = 1507618070000;
+		const twepoch = 1507618070000;
 
 		/** 机器所占的位数 */
-		this.workerIdBits = 4;
+		const workerIdBits = 4;
 
 		/** 数据标识所占的位数 */
-		this.datacenterIdBits = 4;
+		const datacenterIdBits = 4;
 
 		/** 支持最大机器id，结果是31（这个移位算法可以很快计算出几位二进制数所能表示的最大的十进制数） */
-		this.maxWorkerId = -1 ^ ( -1 << this.workerIdBits );
+		const maxWorkerId = -1 ^ ( -1 << workerIdBits );
 
 		/** 支持最大数据标识id，结果是31 */
-		this.maxDatacenterId = -1 ^ ( -1 << this.datacenterIdBits );
+		const maxDatacenterId = -1 ^ ( -1 << datacenterIdBits );
 
 		/** 序列在id中占的位数 */
-		this.sequenceBits = 13;
+		const sequenceBits = 13;
 
 		/** 时间所占的位数 */
-		this.timestampBits = 43;
+		const timestampBits = 43;
 
 		/**
 		 * js 不能处理64位长的数，并且若用左移和右移操作都会强行转回32位长
 		 * 所以移位操作需要用字符串操作代替
 		 */
 		// /** 机器id向左移13位 */
-		// this.workerShift = this.sequenceBits;
+		// const workerShift = const sequenceBits;
 
 		// /** 数据标识id向左移17位(13+4) */
-		// this.datacenterShift = this.sequenceBits + this.workerIdBits
+		// const datacenterShift = const sequenceBits + const workerIdBits
 
 		// /** 时间戳向左移22位（4+4+13）*/
-		// this.timestampShift = this.sequenceBits + this.workerIdBits + this.datacenterIdBits;
+		// const timestampShift = const sequenceBits + const workerIdBits + const datacenterIdBits;
 
 		/** 生成序列的掩码，这里为8181 (0b1111111111111=0x1fff=8181) */
-		this.sequenceMask = -1 ^ ( -1 << this.sequenceBits );
+		const sequenceMask = -1 ^ ( -1 << sequenceBits );
 
-		/** 工作机器id（0-31） */
-		this.workerId;
-
-		/** 数据中心id（0-31） */
-		this.datacenterId;
-
-		/** 毫秒内序列（0-4095） */
-		this.sequence = 0;
-
-		/** 上次生成id的时间戳 */
-		this.lastTimestamp = -1;
 
 		/**
 		 * 构造
 		 * @param workerId 工作ID（0-31）
 		 * @param datacenterId 数据中心ID（0-31）
 		 */
-		if (workerId > this.maxWorkerId || workerId < 0) {
-			throw new Error("worker Id can't be greater than" + String(this.maxWorkerId) + "or less than 0");
+		if (wId > maxWorkerId || wId < 0) {
+			throw new Error("worker Id can't be greater than" + String(maxWorkerId) + "or less than 0");
 		}
-		if (datacenterId > this.maxDatacenterId || datacenterId < 0) {
-			throw new Error("datacenterId Id can't be greater than" + String(this.maxDatacenterId) + "or less than 0");
+		if (datId > maxDatacenterId || datId < 0) {
+			throw new Error("datacenterId Id can't be greater than" + String(maxDatacenterId) + "or less than 0");
 		}
-		this.workerId = workerId;
-		this.datacenterId = datacenterId;
+		workerId = wId;
+		datacenterId = datId;
 
-		/**
-		 * 阻塞到下一个毫秒，直到获得新的时间戳
-		 * @param lastTimestamp 上次生成id的时间戳
-		 * @return 当前时间戳
-		 */
-		this.tilNextMillis = function (lastTimestamp) {
-			let timestamp = new Date().getTime();
-			while (timestamp <= lastTimestamp) {
-				timestamp = new Date().getTime();
-			}
-			return timestamp;
+	/**
+	 * 获得下一个id
+	 * @return snowflakeid
+	 */
+		let timestamp = new Date().getTime();
+		
+		// 如果当前时间小于上一次生成id的时间戳，说明系统始终回退过，这个时候应该抛出异常
+		if (timestamp < lastTimestamp) {
+			throw new Error("Clock moved backwards.  Refusing to generate id for " + String(lastTimestamp - timestamp) + " milliseconds")
 		}
 
-		/**
-		 * 获得下一个id
-		 * @return snowflakeid
-		 */
-		this.nextId = function () {
-			let timestamp = new Date().getTime();
-			
-			// 如果当前时间小于上一次生成id的时间戳，说明系统始终回退过，这个时候应该抛出异常
-			if (timestamp < this.lastTimestamp) {
-				throw new Error("Clock moved backwards.  Refusing to generate id for " + String(lastTimestamp - timestamp) + " milliseconds")
+		// 如果是同一时间生成的，则进行毫秒内序列
+		if (lastTimestamp === timestamp) {
+			sequence = (sequence + 1) & sequenceMask;
+			// 毫秒内序列溢出
+			if (sequence === 0) {
+				// 阻塞到下一个毫秒，获得新的时间戳
+				timestamp = tilNextMillis(lastTimestamp);
 			}
-
-			// 如果是同一时间生成的，则进行毫秒内序列
-			if (this.lastTimestamp === timestamp) {
-				this.sequence = (this.sequence + 1) & this.sequenceMask;
-				// 毫秒内序列溢出
-				if (this.sequence === 0) {
-					// 阻塞到下一个毫秒，获得新的时间戳
-					timestamp = tilNextMillis(this.lastTimestamp);
-				}
-			}
-			// 时间戳改变，毫秒内序列重置
-			else {
-				sequence = 0;
-			}
-
-			// 上次生成id的时间戳
-			this.lastTimestamp = timestamp;
-
-			// 通过转换字符串的方式把所有的一起组成64位的id
-			let binaryId = StringBinaryService.GCD(timestamp - this.twepoch, this.timestampBits) + StringBinaryService.GCD(datacenterId, this.datacenterIdBits) 
-			+ StringBinaryService.GCD(workerId, this.workerIdBits) + StringBinaryService.GCD(this.sequence, this.sequenceBits);
-			
-			// 转换成16进制然后返回
-			return StringBinaryService.BinaryChange(binaryId);
 		}
+		// 时间戳改变，毫秒内序列重置
+		else {
+			sequence = 0;
+		}
+
+		// 上次生成id的时间戳
+		lastTimestamp = timestamp;
+
+		// 通过转换字符串的方式把所有的一起组成64位的id
+		let binaryId = StringBinaryService.GCD(timestamp - twepoch, timestampBits) + StringBinaryService.GCD(datacenterId, datacenterIdBits) 
+		+ StringBinaryService.GCD(workerId, workerIdBits) + StringBinaryService.GCD(sequence, sequenceBits);
+		
+		// 转换成16进制然后返回
+		return StringBinaryService.BinaryChange(binaryId);
 	},
 
 	UserIdWorker: function () {
 		/** 开始id */
 		this.lastId = 0;
-
 		
 	}
 }

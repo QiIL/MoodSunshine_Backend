@@ -1,13 +1,13 @@
 /**
- * MoodUserbase
- * @description :: 用户对象
+ * MoodUserSalt
+ * @description :: 用户盐值
  */
 
 'use strict';
 
 module.exports = {
 	schema: true,
-	tableName: 'mood_userbase',
+	tableName: 'mood_usersalt',
 	meta: {
 		shcemaName: 'public'
 	},
@@ -16,33 +16,27 @@ module.exports = {
 	
 	attributes: {
 		// 登录名称
-		mood_username: {
+		mood_userid: {
 			type: "String",
 			required: true,
 			unique: true
 		},
 		// 用户密码
-		mood_password: {
+		mood_salt: {
 			type: "String",
 			required: true
 		},
 		// 用户名字
-		mood_nickname: {
+		mood_id: {
 			type: "String",
 			required: true,
 			defaultsTo: ""
 		},
-
 		createdAt: {
 			type: "bigint",
 			required: true,
       defaultsTo: new Date().getTime()
     },
-    updatedAt: {
-			type: "bigint",
-			required: true,
-      defaultsTo: new Date().getTime()
-    }
 	},
 
 	beforeUpdate: function (values, next) {

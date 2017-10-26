@@ -51,5 +51,6 @@ module.exports.policies = {
 	MoodUserbaseController: {
 		login: true,
 		find: true,
+		create: true,
 	}
 };

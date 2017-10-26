@@ -31,6 +31,7 @@
     "sails-postgresql": "^0.11.4",
     "should": "^11.2.1",
     "superagent": "^3.6.3",
+    "uuid": "^3.1.0",
     "waterline": "^0.13.1-6"
   },
   "scripts": {
