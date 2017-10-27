@@ -4,6 +4,7 @@
 
 module.exports = [
   {
+		mood_userid: 1000,
     mood_nickname: "QILL",
     mood_username: "qill",
 		mood_password: "b894370bfbe8f006",

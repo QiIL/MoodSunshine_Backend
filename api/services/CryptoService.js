@@ -4,6 +4,7 @@
 
 const crypto = require('crypto');
 const uuidv4 = require('uuid/v4');
+const jsSHA = require('jssha')
 
 module.exports = {
 	
@@ -41,6 +42,27 @@ module.exports = {
 				oldPsd += decipher.update(data, "hex", "utf8");
 				oldPsd += decipher.final("utf8");
 				return resolve(oldPsd);
+			} catch (error) {
+				return reject(error)
+			}
+		})
+	},
+
+	/**
+	 * 哈希
+	 * @param password
+	 * @param salt
+	 * @return {string}
+	 */
+	hashPassword: (password, salt) => {
+		return new Promise((resolve, reject) => {
+			try {
+				let saltObj = new jsSHA("SHA3-224", "TEXT")
+				let passwordObj = new jsSHA("SHA3-256", "TEXT")
+				saltObj.update(salt)
+				const hashSalt = saltObj.getHash("HEX")
+				passwordObj.update(password+hashSalt)
+				resolve(passwordObj.getHash('HEX'))
 			} catch (error) {
 				return reject(error)
 			}

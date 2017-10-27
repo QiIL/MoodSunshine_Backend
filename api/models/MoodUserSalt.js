@@ -17,7 +17,7 @@ module.exports = {
 	attributes: {
 		// 登录名称
 		mood_userid: {
-			type: "String",
+			type: "integer",
 			required: true,
 			unique: true
 		},

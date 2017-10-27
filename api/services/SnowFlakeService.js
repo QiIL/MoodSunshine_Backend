@@ -8,7 +8,6 @@
  * 12位序列，毫秒内的计数，12为的计数顺序号支持每个节点每毫秒（同一机器，同一时间戳）产生4096个ID序号
  * 加起来刚好64位，为一个LONG型
  * snowflake的优点是，整体上按照时间自增排序，并且整个分布式系统内不会产生id碰撞（有数据中心id和机器id作区分），并且效率较高，经测试，snowflake每秒能够产生26万个左右的的ID
- * 
  * 本系统的snowflake的机器应该不会太多，所以减少了2位机器位，并把这些机器位分配到时间位和毫秒内计数位。
  */
 
@@ -39,7 +38,8 @@ let sequence = 0;
 let lastTimestamp = -1;
 
 module.exports = {
-	SnowflakeIdWorker: function (wId=0, datId=0) {
+
+	SnowflakeIdWorker: (wId=0, datId=0) => {
 		// ========================================= Fields ===================================================
 		/** 开始时间戳 （2017-10-10） */
 		const twepoch = 1507618070000;
@@ -128,10 +128,5 @@ module.exports = {
 		// 转换成16进制然后返回
 		return StringBinaryService.BinaryChange(binaryId);
 	},
-
-	UserIdWorker: function () {
-		/** 开始id */
-		this.lastId = 0;
-		
-	}
+	
 }

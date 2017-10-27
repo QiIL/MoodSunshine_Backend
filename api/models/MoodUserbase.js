@@ -15,6 +15,11 @@ module.exports = {
 	connection: 'localPostgresqlServer',
 	
 	attributes: {
+		// 用户id
+		mood_userid: {
+			type: "integer",
+			unique: true
+		},
 		// 登录名称
 		mood_username: {
 			type: "String",
