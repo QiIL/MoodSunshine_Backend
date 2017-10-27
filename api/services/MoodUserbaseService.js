@@ -6,5 +6,6 @@
 module.exports = {
 	create: data => {
 		return MoodUserbase.create(data)
-	}
+	},
+	
 }

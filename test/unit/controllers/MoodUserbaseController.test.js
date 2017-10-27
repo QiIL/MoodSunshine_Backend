@@ -21,7 +21,7 @@ describe("Controller: MoodUserbase", function () {
 			})
 		})
 	})
-	describe("action: create", function () {
+	describe.skip("action: create", function () {
 		it('should be create success!',  (done) => {
 			let user_info = {
 				mood_nickname: "ImTest",

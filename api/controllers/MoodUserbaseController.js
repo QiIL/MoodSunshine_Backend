@@ -16,17 +16,21 @@ module.exports = {
 	 */
 	create: async (req, res) => {
 		const schema = Joi.object({
-			mood_nickname: Joi.string().required(),
-			mood_username: Joi.string().required(),
-			mood_password: Joi.string().required()
+			mood_username: Joi.string().length(80).required(),
+			mood_nickname: Joi.string().length(40).required(),
+			mood_password: Joi.string().length(1024).required()
 		})
 		try {
 			let regData = await ParamValidateService.validate(schema, req.body)
-			let encrypt_password = await CryptoService.encrypt(regData.mood_password, sails.config.auth.security.encryptKey)
+			// 生成盐值
+			const salt = await CryptoService.hash(Math.random().toString(36).substr(2))
+			const encrypt_password = await CryptoService.hashPassword(regData.mood_password+salt)
 			regData.mood_password = encrypt_password
+			// 创建用户, 创建用户盐值对照表
 			await MoodUserbaseService.create(regData)
+			let thisUser = await MoodUserbase.findOne({mood_username: regData.mood_username})
+			await MoodUserSalt.create({mood_userid: thisUser.mood_userid, mood_salt: salt,})
 			return res.created("User" + regData.username + "Created")
-			
 		} catch (error) {
 			return res.badRequest(error.message)
 		}

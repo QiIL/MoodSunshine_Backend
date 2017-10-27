@@ -5,11 +5,11 @@ let should = require('should');
 let request = require('superagent');
 let SnowFlakeService = require('../../../api/services/SnowFlakeService');
 
-describe.only("Service: SnowFlakeService", function () {
+describe("Service: SnowFlakeService", function () {
 	it("should create many different id", function (done) {
-		for (let i = 0; i < 10; i++) {
-			console.log(SnowFlakeService.SnowflakeIdWorker())
-		}
+		// for (let i = 0; i < 10; i++) {
+		// 	console.log(SnowFlakeService.SnowflakeIdWorker())
+		// }
 		let id1 = SnowFlakeService.SnowflakeIdWorker();
 		let id2 = SnowFlakeService.SnowflakeIdWorker();
 		console.log(id1)

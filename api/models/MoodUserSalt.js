@@ -15,23 +15,18 @@ module.exports = {
 	connection: 'localPostgresqlServer',
 	
 	attributes: {
-		// 登录名称
+		// 用户id
 		mood_userid: {
 			type: "integer",
 			required: true,
 			unique: true
 		},
-		// 用户密码
+		// 用户盐值
 		mood_salt: {
 			type: "String",
 			required: true
 		},
-		// 用户名字
-		mood_id: {
-			type: "String",
-			required: true,
-			defaultsTo: ""
-		},
+		// 创建时间
 		createdAt: {
 			type: "bigint",
 			required: true,

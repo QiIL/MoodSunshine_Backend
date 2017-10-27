@@ -50,19 +50,17 @@ module.exports = {
 
 	/**
 	 * 哈希
-	 * @param password
-	 * @param salt
+	 * @param {string} data 明文数据
+	 * @param {number} length 哈希长度
 	 * @return {string}
 	 */
-	hashPassword: (password, salt) => {
+	hash: (data, length=256) => {
 		return new Promise((resolve, reject) => {
 			try {
-				let saltObj = new jsSHA("SHA3-224", "TEXT")
-				let passwordObj = new jsSHA("SHA3-256", "TEXT")
-				saltObj.update(salt)
-				const hashSalt = saltObj.getHash("HEX")
-				passwordObj.update(password+hashSalt)
-				resolve(passwordObj.getHash('HEX'))
+				const shaBase = "SHA3-" + length.toString()
+				let shaObj = new jsSHA(shaBase, "TEXT")
+				shaObj.update(data)
+				resolve(shaObj.getHash('HEX'))
 			} catch (error) {
 				return reject(error)
 			}
